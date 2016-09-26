@@ -1324,14 +1324,8 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 }
 
 - (CGFloat)visibleKeyboardHeight {
-#if !defined(SV_APP_EXTENSIONS)
-    UIWindow *keyboardWindow = nil;
-    for (UIWindow *testWindow in [[UIApplication sharedApplication] windows]) {
-        if(![[testWindow class] isEqual:[UIWindow class]]) {
-            keyboardWindow = testWindow;
-            break;
-        }
-    }
+//#if !defined(SV_APP_EXTENSIONS)
+    UIWindow *keyboardWindow = [[self viewForExtension] window];
     
     for (__strong UIView *possibleKeyboard in [keyboardWindow subviews]) {
         if([possibleKeyboard isKindOfClass:NSClassFromString(@"UIPeripheralHostView")] || [possibleKeyboard isKindOfClass:NSClassFromString(@"UIKeyboard")]) {
@@ -1344,7 +1338,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
             }
         }
     }
-#endif
+//#endif
     return 0;
 }
 

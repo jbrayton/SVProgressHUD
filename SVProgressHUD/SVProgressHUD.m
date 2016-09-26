@@ -1326,6 +1326,18 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 - (CGFloat)visibleKeyboardHeight {
 //#if !defined(SV_APP_EXTENSIONS)
     UIWindow *keyboardWindow = [[self viewForExtension] window];
+    if (![[[NSBundle mainBundle] bundlePath] hasSuffix:@".appex"]) {
+        
+        Class appClass = NSClassFromString(@"UIApplication");
+        id app = [appClass performSelector:@selector(sharedApplication)];
+        
+        for (UIWindow *testWindow in [app windows]) {
+            if(![[testWindow class] isEqual:[UIWindow class]]) {
+                keyboardWindow = testWindow;
+                break;
+            }
+        }
+    }
     
     for (__strong UIView *possibleKeyboard in [keyboardWindow subviews]) {
         if([possibleKeyboard isKindOfClass:NSClassFromString(@"UIPeripheralHostView")] || [possibleKeyboard isKindOfClass:NSClassFromString(@"UIKeyboard")]) {

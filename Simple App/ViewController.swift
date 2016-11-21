@@ -18,6 +18,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         SVProgressHUD.setViewForExtension(self.view)
+        SVProgressHUD.setTapToFinishAutoDismiss(true)
         
         self.title = "ViewController"
         
@@ -51,7 +52,7 @@ class ViewController: UIViewController {
     }
 
     func handleButtonTap() {
-        SVProgressHUD.showError(withStatus: "Got error")
+        SVProgressHUD.showSuccess(withStatus: "success")
     }
 
 

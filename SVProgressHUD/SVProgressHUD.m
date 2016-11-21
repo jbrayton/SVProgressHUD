@@ -179,6 +179,10 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
     [self sharedView].minimumDismissTimeInterval = interval;
 }
 
++ (void)setTapToFinishAutoDismiss:(BOOL)tapToFinishAutoDismiss {
+    [self sharedView].tapToFinishAutoDismiss = tapToFinishAutoDismiss;
+}
+
 + (void)setFadeInAnimationDuration:(NSTimeInterval)duration {
     [self sharedView].fadeInAnimationDuration = duration;
 }
@@ -358,7 +362,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         UIImage* infoImage = [UIImage imageWithContentsOfFile:[imageBundle pathForResource:@"info" ofType:@"png"]];
         UIImage* successImage = [UIImage imageWithContentsOfFile:[imageBundle pathForResource:@"success" ofType:@"png"]];
         UIImage* errorImage = [UIImage imageWithContentsOfFile:[imageBundle pathForResource:@"error" ofType:@"png"]];
-
+        
         if ([[UIImage class] instancesRespondToSelector:@selector(imageWithRenderingMode:)]) {
             _infoImage = [infoImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
             _successImage = [successImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -368,7 +372,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
             _successImage = successImage;
             _errorImage = errorImage;
         }
-
+        
         _ringThickness = 2.0f;
         _ringRadius = 18.0f;
         _ringNoTextRadius = 24.0f;
@@ -376,6 +380,8 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         _cornerRadius = 14.0f;
         
         _minimumDismissTimeInterval = 5.0;
+        
+        _tapToFinishAutoDismiss = NO;
 
         _fadeInAnimationDuration = SVProgressHUDDefaultAnimationDuration;
         _fadeOutAnimationDuration = SVProgressHUDDefaultAnimationDuration;
@@ -612,7 +618,12 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 #else
         // If SVProgressHUD ist used inside an app extension add it to the given view
         if(self.viewForExtension) {
+//            self.overlayView.translatesAutoresizingMaskIntoConstraints = NO;
             [self.viewForExtension addSubview:self.overlayView];
+//            [self.viewForExtension addConstraint:[self.viewForExtension.topAnchor constraintEqualToAnchor:self.overlayView.topAnchor]];
+//            [self.viewForExtension addConstraint:[self.viewForExtension.bottomAnchor constraintEqualToAnchor:self.overlayView.bottomAnchor]];
+//            [self.viewForExtension addConstraint:[self.viewForExtension.leftAnchor constraintEqualToAnchor:self.overlayView.leftAnchor]];
+//            [self.viewForExtension addConstraint:[self.viewForExtension.rightAnchor constraintEqualToAnchor:self.overlayView.rightAnchor]];
         }
 #endif
     } else {
@@ -689,7 +700,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 - (void)positionHUD:(NSNotification*)notification {
     CGFloat keyboardHeight = 0.0f;
     double animationDuration = 0.0;
-
+    
 #if !defined(SV_APP_EXTENSIONS) && TARGET_OS_IOS
     self.frame = [[[UIApplication sharedApplication] delegate] window].bounds;
     UIInterfaceOrientation orientation = UIApplication.sharedApplication.statusBarOrientation;
@@ -721,7 +732,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         
         if(notification.name == UIKeyboardWillShowNotification || notification.name == UIKeyboardDidShowNotification) {
             keyboardHeight = CGRectGetWidth(keyboardFrame);
-
+            
             if(ignoreOrientation || UIInterfaceOrientationIsPortrait(orientation)) {
                 keyboardHeight = CGRectGetHeight(keyboardFrame);
             }
@@ -733,7 +744,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
     
     // Get the currently active frame of the display (depends on orientation)
     CGRect orientationFrame = self.bounds;
-
+    
 #if !defined(SV_APP_EXTENSIONS) && TARGET_OS_IOS
     CGRect statusBarFrame = UIApplication.sharedApplication.statusBarFrame;
 #else
@@ -766,7 +777,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
     
     CGFloat posX = CGRectGetWidth(orientationFrame)/2.0f;
     CGFloat posY = floorf(activeHeight*0.45f);
-
+    
     CGFloat rotateAngle = 0.0;
     CGPoint newCenter = CGPointMake(posX, posY);
     
@@ -835,6 +846,12 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         [[NSNotificationCenter defaultCenter] postNotificationName:SVProgressHUDDidTouchDownInsideNotification
                                                             object:self
                                                           userInfo:[self notificationUserInfo]];
+    }
+    
+    if (self.tapToFinishAutoDismiss && self.fadeOutTimer != nil) {
+        [self.fadeOutTimer invalidate];
+        self.fadeOutTimer = nil;
+        [self dismiss];
     }
 }
 
@@ -948,7 +965,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         self.accessibilityLabel = status;
         self.isAccessibilityElement = YES;
     } else {
-        self.overlayView.userInteractionEnabled = NO;
+        self.overlayView.userInteractionEnabled = YES;
         self.hudView.accessibilityLabel = status;
         self.hudView.isAccessibilityElement = YES;
     }
@@ -1276,6 +1293,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 }
 
 - (UIView*)hudView {
+    
     if(!_hudView) {
         _hudView = [[UIView alloc] initWithFrame:CGRectZero];
         _hudView.layer.masksToBounds = YES;
@@ -1309,7 +1327,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
     // Update styling
     _statusLabel.textColor = self.foregroundColorForStyle;
     _statusLabel.font = self.font;
-
+    
     return _statusLabel;
 }
 
@@ -1427,6 +1445,10 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 
 - (void)setMinimumDismissTimeInterval:(NSTimeInterval)minimumDismissTimeInterval {
     if (!_isInitializing) _minimumDismissTimeInterval = minimumDismissTimeInterval;
+}
+
+- (void)setTapToFinishAutoDismiss:(BOOL)tapToFinishAutoDismiss {
+    if (!_isInitializing) _tapToFinishAutoDismiss = tapToFinishAutoDismiss;
 }
 
 - (void)setFadeInAnimationDuration:(NSTimeInterval)duration {

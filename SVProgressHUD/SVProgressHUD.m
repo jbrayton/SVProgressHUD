@@ -47,6 +47,8 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 
 @property (nonatomic, readonly) CGFloat visibleKeyboardHeight;
 
+@property (nonatomic, strong) UIGestureRecognizer* tapGestureRecognizer;
+
 - (void)updateHUDFrame;
 - (void)updateMask;
 - (void)updateBlurBounds;
@@ -64,8 +66,6 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 
 - (void)positionHUD:(NSNotification*)notification;
 - (void)moveToPoint:(CGPoint)newCenter rotateAngle:(CGFloat)angle;
-
-- (void)overlayViewDidReceiveTouchEvent:(id)sender forEvent:(UIEvent*)event;
 
 - (void)showProgress:(float)progress status:(NSString*)status;
 - (void)showImage:(UIImage*)image status:(NSString*)status duration:(NSTimeInterval)duration;
@@ -618,12 +618,9 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 #else
         // If SVProgressHUD ist used inside an app extension add it to the given view
         if(self.viewForExtension) {
-//            self.overlayView.translatesAutoresizingMaskIntoConstraints = NO;
             [self.viewForExtension addSubview:self.overlayView];
-//            [self.viewForExtension addConstraint:[self.viewForExtension.topAnchor constraintEqualToAnchor:self.overlayView.topAnchor]];
-//            [self.viewForExtension addConstraint:[self.viewForExtension.bottomAnchor constraintEqualToAnchor:self.overlayView.bottomAnchor]];
-//            [self.viewForExtension addConstraint:[self.viewForExtension.leftAnchor constraintEqualToAnchor:self.overlayView.leftAnchor]];
-//            [self.viewForExtension addConstraint:[self.viewForExtension.rightAnchor constraintEqualToAnchor:self.overlayView.rightAnchor]];
+            self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnView:)];
+            [self.viewForExtension.window addGestureRecognizer:self.tapGestureRecognizer];
         }
 #endif
     } else {
@@ -834,19 +831,10 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 
 #pragma mark - Event handling
 
-- (void)overlayViewDidReceiveTouchEvent:(id)sender forEvent:(UIEvent*)event {
+- (void)tapOnView:(id)sender {
     [[NSNotificationCenter defaultCenter] postNotificationName:SVProgressHUDDidReceiveTouchEventNotification
                                                         object:self
                                                       userInfo:[self notificationUserInfo]];
-    
-    UITouch *touch = event.allTouches.anyObject;
-    CGPoint touchLocation = [touch locationInView:self];
-    
-    if(CGRectContainsPoint(self.hudView.frame, touchLocation)) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:SVProgressHUDDidTouchDownInsideNotification
-                                                            object:self
-                                                          userInfo:[self notificationUserInfo]];
-    }
     
     if (self.tapToFinishAutoDismiss && self.fadeOutTimer != nil) {
         [self.fadeOutTimer invalidate];
@@ -1064,6 +1052,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
                 strongSelf.hudView.transform = CGAffineTransformScale(strongSelf.hudView.transform, 1/1.3f, 1/1.3f);
                 strongSelf.alpha = 0.0f;
                 strongSelf.hudView.alpha = 0.0f;
+                [strongSelf.viewForExtension.window removeGestureRecognizer:self.tapGestureRecognizer];
             };
             
             __block void (^completionBlock)(void) = ^{
@@ -1279,7 +1268,6 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         _overlayView = [[UIControl alloc] init];
         _overlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         _overlayView.backgroundColor = [UIColor clearColor];
-        [_overlayView addTarget:self action:@selector(overlayViewDidReceiveTouchEvent:forEvent:) forControlEvents:UIControlEventTouchDown];
     }
     // Update frame
 #if !defined(SV_APP_EXTENSIONS)

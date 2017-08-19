@@ -620,7 +620,9 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         if(self.viewForExtension) {
             [self.viewForExtension addSubview:self.overlayView];
             self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnView:)];
-            [self.viewForExtension.window addGestureRecognizer:self.tapGestureRecognizer];
+            self.tapGestureRecognizer.delegate = self;
+            UIWindow* window = self.viewForExtension.window;
+            [window addGestureRecognizer:self.tapGestureRecognizer];
         }
 #endif
     } else {
@@ -841,6 +843,32 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         self.fadeOutTimer = nil;
         [self dismiss];
     }
+}
+
+#pragma mark - Gesture Recognizer Delegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceivePress:(UIPress *)press {
+    return YES;
 }
 
 

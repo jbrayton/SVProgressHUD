@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		21695E3D1F48AB62004F7314 /* PresentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21695E3C1F48AB62004F7314 /* PresentedViewController.swift */; };
 		21DEE4FD1D99BC89000BF470 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21DEE4FC1D99BC89000BF470 /* AppDelegate.swift */; };
 		21DEE4FF1D99BC89000BF470 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21DEE4FE1D99BC89000BF470 /* ViewController.swift */; };
 		21DEE5041D99BC89000BF470 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 21DEE5031D99BC89000BF470 /* Assets.xcassets */; };
@@ -66,6 +67,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		21695E3C1F48AB62004F7314 /* PresentedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentedViewController.swift; sourceTree = "<group>"; };
 		21DEE4FA1D99BC89000BF470 /* Simple App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Simple App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		21DEE4FC1D99BC89000BF470 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		21DEE4FE1D99BC89000BF470 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 			children = (
 				21DEE4FC1D99BC89000BF470 /* AppDelegate.swift */,
 				21DEE4FE1D99BC89000BF470 /* ViewController.swift */,
+				21695E3C1F48AB62004F7314 /* PresentedViewController.swift */,
 				21DEE5031D99BC89000BF470 /* Assets.xcassets */,
 				21DEE5051D99BC89000BF470 /* LaunchScreen.storyboard */,
 				21DEE5081D99BC89000BF470 /* Info.plist */,
@@ -337,6 +340,7 @@
 			files = (
 				21DEE4FF1D99BC89000BF470 /* ViewController.swift in Sources */,
 				21DEE4FD1D99BC89000BF470 /* AppDelegate.swift in Sources */,
+				21695E3D1F48AB62004F7314 /* PresentedViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

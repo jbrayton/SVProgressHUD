@@ -1080,13 +1080,13 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
                 strongSelf.hudView.transform = CGAffineTransformScale(strongSelf.hudView.transform, 1/1.3f, 1/1.3f);
                 strongSelf.alpha = 0.0f;
                 strongSelf.hudView.alpha = 0.0f;
-                [strongSelf.viewForExtension.window removeGestureRecognizer:self.tapGestureRecognizer];
             };
             
             __block void (^completionBlock)(void) = ^{
                 // Check if we really achieved to dismiss the HUD (<=> alpha values are applied)
                 // and the change of these values has not been cancelled in between
                 // e.g. due to a new show
+                [strongSelf.viewForExtension.window removeGestureRecognizer:self.tapGestureRecognizer];
                 if(strongSelf.alpha == 0.0f && strongSelf.hudView.alpha == 0.0f){
                     // Clean up view hierarchy (overlays)
                     [strongSelf.overlayView removeFromSuperview];

@@ -620,9 +620,9 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         if(self.viewForExtension) {
             [self.viewForExtension addSubview:self.overlayView];
             if (!self.tapGestureRecognizer) {
-                NSLog(@"creating tapGestureRecognizer");
                 self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnView:)];
                 self.tapGestureRecognizer.delegate = self;
+                self.tapGestureRecognizer.cancelsTouchesInView = NO;
                 UIWindow* window = self.viewForExtension.window;
                 [window addGestureRecognizer:self.tapGestureRecognizer];
             }
@@ -1092,7 +1092,6 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
                 // and the change of these values has not been cancelled in between
                 // e.g. due to a new show
                 if (strongSelf.tapGestureRecognizer) {
-                    NSLog(@"removing tapGestureRecognizer");
                     [strongSelf.viewForExtension.window removeGestureRecognizer:strongSelf.tapGestureRecognizer];
                     strongSelf.tapGestureRecognizer = nil;
                 }

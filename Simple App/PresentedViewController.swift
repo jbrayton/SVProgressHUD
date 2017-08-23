@@ -52,7 +52,13 @@ class PresentedViewController: UIViewController {
     }
     
     func handleButtonTap() {
-        SVProgressHUD.showSuccess(withStatus: "success")
+        SVProgressHUD.show(withStatus: "yo")
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0) { 
+            SVProgressHUD.show(withStatus: "xxx")
+        }
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4.0) {
+            SVProgressHUD.dismiss()
+        }
     }
     
     

@@ -173,6 +173,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 
 + (void)setViewForExtension:(UIView*)view {
     [self sharedView].viewForExtension = view;
+    [self sharedView].windowForExtension = view.window;
 }
 
 + (void)setMinimumDismissTimeInterval:(NSTimeInterval)interval {
@@ -622,8 +623,8 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
             if (!self.tapGestureRecognizer) {
                 self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnView:)];
                 self.tapGestureRecognizer.delegate = self;
-                self.tapGestureRecognizer.cancelsTouchesInView = NO;
-                UIWindow* window = self.viewForExtension.window;
+//                self.tapGestureRecognizer.cancelsTouchesInView = NO;
+                UIWindow* window = self.windowForExtension;
                 [window addGestureRecognizer:self.tapGestureRecognizer];
             }
         }
@@ -1068,7 +1069,6 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 - (void)dismissWithDelay:(NSTimeInterval)delay completion:(SVProgressHUDDismissCompletion)completion {
     __weak SVProgressHUD *weakSelf = self;
     UIGestureRecognizer* tapGestureRecognizer = [self tapGestureRecognizer];
-    UIWindow* window = self.window;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         __strong SVProgressHUD *strongSelf = weakSelf;
         if(strongSelf){
@@ -1092,7 +1092,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
                 // and the change of these values has not been cancelled in between
                 // e.g. due to a new show
                 if (strongSelf.tapGestureRecognizer) {
-                    [strongSelf.viewForExtension.window removeGestureRecognizer:strongSelf.tapGestureRecognizer];
+                    [strongSelf.windowForExtension removeGestureRecognizer:strongSelf.tapGestureRecognizer];
                     strongSelf.tapGestureRecognizer = nil;
                 }
                 if(strongSelf.alpha == 0.0f && strongSelf.hudView.alpha == 0.0f){
@@ -1148,10 +1148,12 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
             
             // Inform iOS to redraw the view hierarchy
             [strongSelf setNeedsDisplay];
-        } else if (completion) {
+        } else {
             // Run an (optional) completionHandler
-            [window removeGestureRecognizer:tapGestureRecognizer];
-            completion();
+            [self.windowForExtension removeGestureRecognizer:tapGestureRecognizer];
+            if (completion) {
+                completion();
+            }
         }
     }];
 }

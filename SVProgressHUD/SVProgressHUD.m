@@ -619,6 +619,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
         // If SVProgressHUD ist used inside an app extension add it to the given view
         if(self.viewForExtension) {
             [self.viewForExtension addSubview:self.overlayView];
+            NSLog(@"creating tapGestureRecognizer");
             self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnView:)];
             self.tapGestureRecognizer.delegate = self;
             UIWindow* window = self.viewForExtension.window;
@@ -848,26 +849,32 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
 #pragma mark - Gesture Recognizer Delegate
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    NSLog(@"gestureRecognizerShouldBegin");
     return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    NSLog(@"shouldRecognizeSimultaneouslyWithGestureRecognizer");
     return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
+    NSLog(@"shouldRequireFailureOfGestureRecognizer");
     return NO;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer  {
+    NSLog(@"shouldBeRequiredToFailByGestureRecognizer");
     return NO;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    NSLog(@"shouldReceiveTouch");
     return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceivePress:(UIPress *)press {
+    NSLog(@"shouldReceivePress");
     return YES;
 }
 
@@ -1086,6 +1093,7 @@ static const CGFloat SVProgressHUDDefaultAnimationDuration = 0.15;
                 // Check if we really achieved to dismiss the HUD (<=> alpha values are applied)
                 // and the change of these values has not been cancelled in between
                 // e.g. due to a new show
+                NSLog(@"removing tapGestureRecognizer");
                 [strongSelf.viewForExtension.window removeGestureRecognizer:self.tapGestureRecognizer];
                 if(strongSelf.alpha == 0.0f && strongSelf.hudView.alpha == 0.0f){
                     // Clean up view hierarchy (overlays)
